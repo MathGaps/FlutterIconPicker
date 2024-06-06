@@ -10,6 +10,7 @@ export 'Models/IconPack.dart';
 export 'Serialization/iconDataSerialization.dart';
 
 import 'package:flutter/material.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'Models/IconPack.dart';
 import 'Models/icon_picker_icon.dart';
 import 'package:flutter_iconpicker/controllers/icon_controller.dart';
@@ -76,6 +77,7 @@ Future<IconData?> showIconPicker(
   ///   const Text('Pick an icon')
   /// ```
   Widget title = const Text('Pick an icon'),
+  bool useInterceptor = false,
 
   /// The child for the Widget `FlatButton`, which closes the dialog.
   /// Sits underneeth everything.
@@ -134,19 +136,15 @@ Future<IconData?> showIconPicker(
   if (iconColor == null) iconColor = Theme.of(context).iconTheme.color;
   if (constraints == null) {
     if (adaptiveDialog) {
-      constraints =
-          const BoxConstraints(maxHeight: 500, minWidth: 450, maxWidth: 720);
+      constraints = const BoxConstraints(maxHeight: 500, minWidth: 450, maxWidth: 720);
     } else {
-      constraints =
-          const BoxConstraints(maxHeight: 350, minWidth: 450, maxWidth: 678);
+      constraints = const BoxConstraints(maxHeight: 350, minWidth: 450, maxWidth: 678);
     }
   }
 
   if (iconPickerShape == null)
-    iconPickerShape =
-        RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0));
-  if (backgroundColor == null)
-    backgroundColor = Theme.of(context).dialogBackgroundColor;
+    iconPickerShape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0));
+  if (backgroundColor == null) backgroundColor = Theme.of(context).dialogBackgroundColor;
 
   IconData? iconPicked;
 
@@ -157,39 +155,11 @@ Future<IconData?> showIconPicker(
       iconPicked = await showDialog(
         barrierDismissible: barrierDismissible,
         context: context,
-        builder: (BuildContext context) => FIPDefaultDialog(
-          controller: controller,
-          showSearchBar: showSearchBar,
-          adaptive: adaptiveDialog,
-          showTooltips: showTooltips,
-          barrierDismissible: barrierDismissible,
-          iconSize: iconSize,
-          iconColor: iconColor,
-          mainAxisSpacing: mainAxisSpacing,
-          crossAxisSpacing: crossAxisSpacing,
-          iconPickerShape: iconPickerShape,
-          backgroundColor: backgroundColor,
-          constraints: constraints,
-          title: title,
-          closeChild: closeChild,
-          searchIcon: searchIcon,
-          searchHintText: searchHintText,
-          searchClearIcon: searchClearIcon,
-          noResultsText: noResultsText,
-          iconPackMode: iconPackModes,
-          customIconPack: customIconPack,
-          searchComparator: searchComparator,
-        ),
-      );
-    } else {
-      iconPicked = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          fullscreenDialog: true,
-          builder: (context) => FIPDefaultDialog(
+        builder: (BuildContext context) => PointerInterceptor(
+          intercepting: useInterceptor,
+          child: FIPDefaultDialog(
             controller: controller,
             showSearchBar: showSearchBar,
-            routedView: true,
             adaptive: adaptiveDialog,
             showTooltips: showTooltips,
             barrierDismissible: barrierDismissible,
@@ -212,32 +182,69 @@ Future<IconData?> showIconPicker(
           ),
         ),
       );
+    } else {
+      iconPicked = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          fullscreenDialog: true,
+          builder: (context) => PointerInterceptor(
+            intercepting: useInterceptor,
+            child: FIPDefaultDialog(
+              controller: controller,
+              showSearchBar: showSearchBar,
+              routedView: true,
+              adaptive: adaptiveDialog,
+              showTooltips: showTooltips,
+              barrierDismissible: barrierDismissible,
+              iconSize: iconSize,
+              iconColor: iconColor,
+              mainAxisSpacing: mainAxisSpacing,
+              crossAxisSpacing: crossAxisSpacing,
+              iconPickerShape: iconPickerShape,
+              backgroundColor: backgroundColor,
+              constraints: constraints,
+              title: title,
+              closeChild: closeChild,
+              searchIcon: searchIcon,
+              searchHintText: searchHintText,
+              searchClearIcon: searchClearIcon,
+              noResultsText: noResultsText,
+              iconPackMode: iconPackModes,
+              customIconPack: customIconPack,
+              searchComparator: searchComparator,
+            ),
+          ),
+        ),
+      );
     }
   } else {
     iconPicked = await showDialog(
       barrierDismissible: barrierDismissible,
       context: context,
-      builder: (BuildContext context) => FIPDefaultDialog(
-        controller: controller,
-        showSearchBar: showSearchBar,
-        showTooltips: showTooltips,
-        barrierDismissible: barrierDismissible,
-        iconSize: iconSize,
-        iconColor: iconColor,
-        mainAxisSpacing: mainAxisSpacing,
-        crossAxisSpacing: crossAxisSpacing,
-        iconPickerShape: iconPickerShape,
-        backgroundColor: backgroundColor,
-        constraints: constraints,
-        title: title,
-        closeChild: closeChild,
-        searchIcon: searchIcon,
-        searchHintText: searchHintText,
-        searchClearIcon: searchClearIcon,
-        noResultsText: noResultsText,
-        iconPackMode: iconPackModes,
-        customIconPack: customIconPack,
-        searchComparator: searchComparator,
+      builder: (BuildContext context) => PointerInterceptor(
+        intercepting: useInterceptor,
+        child: FIPDefaultDialog(
+          controller: controller,
+          showSearchBar: showSearchBar,
+          showTooltips: showTooltips,
+          barrierDismissible: barrierDismissible,
+          iconSize: iconSize,
+          iconColor: iconColor,
+          mainAxisSpacing: mainAxisSpacing,
+          crossAxisSpacing: crossAxisSpacing,
+          iconPickerShape: iconPickerShape,
+          backgroundColor: backgroundColor,
+          constraints: constraints,
+          title: title,
+          closeChild: closeChild,
+          searchIcon: searchIcon,
+          searchHintText: searchHintText,
+          searchClearIcon: searchClearIcon,
+          noResultsText: noResultsText,
+          iconPackMode: iconPackModes,
+          customIconPack: customIconPack,
+          searchComparator: searchComparator,
+        ),
       ),
     );
   }
